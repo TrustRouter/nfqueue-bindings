@@ -87,7 +87,7 @@ int set_callback(PyObject *pyfunc)
 };
 
 %typemap (out) const char* get_data {
-        $result = PyString_FromStringAndSize($1,arg1->len); // blah
+        $result = PyBytes_FromStringAndSize($1,arg1->len);
 }
 
 %extend payload {

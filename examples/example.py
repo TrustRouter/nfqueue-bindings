@@ -12,23 +12,16 @@ sys.path.append('python')
 sys.path.append('build/python')
 import nfqueue
 
-sys.path.append('dpkt-1.6')
-from dpkt import ip
-
 count = 0
 
 def cb(payload):
 	global count
 
-	print "python callback called !"
+	print("python callback called !")
 	count += 1
 
 	data = payload.get_data()
-	pkt = ip.IP(data)
-	if pkt.p == ip.IP_PROTO_TCP:
-		print "  len %d proto %s src: %s:%s    dst %s:%s " % (payload.get_length(),pkt.p,inet_ntoa(pkt.src),pkt.tcp.sport,inet_ntoa(pkt.dst),pkt.tcp.dport)
-	else:
-		print "  len %d proto %s src: %s    dst %s " % (payload.get_length(),pkt.p,inet_ntoa(pkt.src),inet_ntoa(pkt.dst))
+	print(data)
 
 	payload.set_verdict(nfqueue.NF_ACCEPT)
 
@@ -37,10 +30,10 @@ def cb(payload):
 
 q = nfqueue.queue()
 
-print "open"
+print("open")
 q.open()
 
-print "bind"
+print("bind")
 q.bind(AF_INET)
 
 #print "setting callback (should fail, wrong arg type)"
@@ -49,25 +42,24 @@ q.bind(AF_INET)
 #except TypeError, e:
 #	print "type failure (expected), continuing"
 
-print "setting callback"
+print("setting callback")
 q.set_callback(cb)
 
-print "creating queue"
+print("creating queue")
 q.create_queue(0)
 
 q.set_queue_maxlen(50000)
 
-print "trying to run"
+print("trying to run")
 try:
 	q.try_run()
-except KeyboardInterrupt, e:
-	print "interrupted"
+except KeyboardInterrupt as e:
+	print("interrupted")
 
-print "%d packets handled" % count
+print("%d packets handled" % count)
 
-print "unbind"
+print("unbind")
 q.unbind(AF_INET)
 
-print "close"
+print("close")
 q.close()
-
